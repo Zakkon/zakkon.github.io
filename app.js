@@ -1,24 +1,16 @@
-//This is fired when the window loads
-window.onload = function () {
-    var el = document.getElementById('content'); //grab the DOM (easy peasy, this is JS)
-    var greeter = new Greeter(el); //Create an object C# style
-    greeter.start(); //call a function C# style
-};
-var Greeter = /** @class */ (function () {
-    function Greeter(element) {
-        this.element = element; //Assign them just like you would in C#
-        this.element.innerHTML += "The time is: ";
-        this.span = document.createElement('span');
-        this.element.appendChild(this.span);
-        this.span.innerText = new Date().toUTCString();
-    }
-    Greeter.prototype.start = function () {
-        var _this = this;
-        this.timerToken = setInterval(function () { return _this.span.innerHTML = new Date().toUTCString(); }, 500);
-    };
-    Greeter.prototype.stop = function () {
-        clearTimeout(this.timerToken);
-    };
-    return Greeter;
-}());
-//# sourceMappingURL=app.js.map
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const random_1 = require("./src/random");
+const pointselector_1 = require("./src/voronoi/pointselector");
+const voronoimapfilter_1 = require("./src/filters/voronoimapfilter");
+const browser_1 = require("./browser");
+let r = new random_1.Random(123);
+let mapw = 1900;
+let maph = 944;
+let points = pointselector_1.PointSelector.GeneratePointsJittered(1000, mapw, maph, r);
+let filter = new voronoimapfilter_1.VoronoiMapFilter(mapw, maph);
+filter.CreateGraph(points, pointselector_1.PointSelector.NUM_LLOYD_RELAXATIONS);
+console.log(filter.graph.sites.Count);
+console.log(filter.cells.length);
+var browser = new browser_1.Browser();
+browser.Draw(filter.cellsByID[547]);

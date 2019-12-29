@@ -1,30 +1,19 @@
-﻿//This is fired when the window loads
-window.onload = () => {
-    var el = document.getElementById('content'); //grab the DOM (easy peasy, this is JS)
-    var greeter = new Greeter(el); //Create an object C# style
-    greeter.start(); //call a function C# style
-};
+import { Vertex } from "./src/voronoi/vertex"
+import { Vector2f } from "./src/utils"
+import { VoronoiGraph } from "./src/voronoi/graph";
+import { Random } from "./src/random";
+import { PointSelector } from "./src/voronoi/pointselector";
+import { VoronoiMapFilter } from "./src/filters/voronoimapfilter";
+import { Browser } from "./browser";
 
-class Greeter {
-    element: HTMLElement; //our cached variables up here
-    span: HTMLElement;
-    timerToken: number;
-
-    constructor(element: HTMLElement) { //Take a DOM as a parameter (interesting!)
-        this.element = element; //Assign them just like you would in C#
-        this.element.innerHTML += "The time is: ";
-        this.span = document.createElement('span');
-        this.element.appendChild(this.span);
-        this.span.innerText = new Date().toUTCString();
-    }
-
-    start() {
-        this.timerToken = setInterval(() => this.span.innerHTML = new Date().toUTCString(), 500);
-    }
-
-    stop() {
-        clearTimeout(this.timerToken);
-    }
-
-}
-
+//Call this to build with webpack: webpack-cli app.ts --output=bundle.js -d
+declare var require: any
+let r = new Random(123);
+let mapw = 1900; let maph = 944;
+let points = PointSelector.GeneratePointsJittered(1000, mapw, maph, r);
+let filter = new VoronoiMapFilter(mapw, maph);
+filter.CreateGraph(points, PointSelector.NUM_LLOYD_RELAXATIONS);
+console.log(filter.graph.sites.Count);
+console.log(filter.cells.length);
+var browser = new Browser();
+browser.Draw(filter.cellsByID[547]);
